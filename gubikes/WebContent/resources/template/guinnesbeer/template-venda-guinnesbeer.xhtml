@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta charset="utf-8"></meta>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"></meta>
+	<title>C. GUINNES BEER</title>
+
+
+	<meta
+		content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+		name="viewport"></meta>
+
+	<link rel="shortcut icon"
+		href="#{request.contextPath}/resources/img/favicon.png" />
+
+
+	<link rel="stylesheet" type="text/css"
+		href="#{request.contextPath}/resources/bootstrap/css/bootstrap.min.css" />
+
+	<link rel="stylesheet" type="text/css"
+		href="#{request.contextPath}/resources/dist/css/AdminLTE.min.css" />
+
+	<link rel="stylesheet" type="text/css"
+		href="#{request.contextPath}/resources/dist/css/skins/skin-blue.min.css" />
+	<link rel="stylesheet"
+		href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" />
+
+	<link rel="stylesheet"
+		href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css" />
+	<link rel="stylesheet"
+		href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css" />
+	<style>
+.ui-dialog-content {
+	max-height: 500px !important;
+}
+</style>
+</h:head>
+<h:body class="hold-transition skin-blue sidebar-mini">
+
+
+
+
+
+	<div class="wrapper">
+
+		<header class="main-header">
+
+			<a href="../conveniencia/inicio.jsf" class="logo"> <span
+				class="logo-mini"><b>D</b></span> <span class="logo-lg"><b>C. GUINNES BEER</b></span>
+			</a>
+
+			<nav class="navbar navbar-static-top">
+
+				<a href="#" class="sidebar-toggle" data-toggle="offcanvas"
+					role="button"> <span class="sr-only">Toggle navigation</span> <span
+					class="icon-bar"></span> <span class="icon-bar"></span> <span
+					class="icon-bar"></span>
+				</a>
+
+				<div class="navbar-custom-menu">
+					<ul class="nav navbar-nav">
+						<li class="dropdown user user-menu"><a href="#"
+							class="dropdown-toggle" data-toggle="dropdown"> <span
+								class="hidden-xs"><i class="fa fa-user"
+									aria-hidden="true"></i> <h:outputText
+										value=" #{usuarioSessaoMB.usuario.nomeUsuario}" /> </span>
+						</a></li>
+						<li><a href="../j_spring_security_logout"> <i
+								class="fa fa-power-off" aria-hidden="true"></i> Sair
+						</a></li>
+
+					</ul>
+				</div>
+			</nav>
+		</header>
+		<aside class="main-sidebar">
+
+			<section class="sidebar">
+
+				<ul class="sidebar-menu">
+
+
+					<li><a onclick="PF('dlgConsultaProduto').show();"><i
+							class="fa fa-search" aria-hidden="true"></i> <span>
+								Consulta </span></a></li>
+
+					<li><a onclick="PF('dlgPreco2').show();"><i
+							class="fa fa-money" aria-hidden="true"></i> <span> Preço 2</span></a></li>
+
+					<li><a onclick="PF('dlgProduto').show();"><i
+							class="fa fa-cart-plus" aria-hidden="true"></i> <span>
+								Cancela Venda</span></a></li>
+
+					<li><a onclick="PF('dlgFechamentoCaixa').show();"><i
+							class="fa fa-check" aria-hidden="true"></i> <span>
+								Fechamento Dia</span></a></li>
+
+					<!-- 					<li><a onclick="PF('dlgProduto').show();"><i -->
+					<!-- 							class="fa fa-reply" aria-hidden="true"></i> <span> Voltar</span></a></li> -->
+
+					<h:form>
+						<li><i style="margin-left: 13px;" class="fa fa-reply"
+							aria-hidden="true"> </i> <p:commandButton value="Voltar Início"
+								actionListener="#{vendaConvenienciaMB.voltar()}"
+								update="dlgInformacao"
+								style="background:#FBFBEF; border-color: #FBFBEF;" /></li>
+					</h:form>
+				</ul>
+
+
+			</section>
+		</aside>
+
+		<div class="content-wrapper">
+			<section class="content">
+				<div id="mensagem">
+					<ui:insert name="mensagem">
+					</ui:insert>
+				</div>
+				<div id="barraStatus">
+					<ui:insert name="barraStatus">
+					</ui:insert>
+				</div>
+				<div id="conteudo">
+					<ui:insert name="conteudo">
+					</ui:insert>
+				</div>
+				<div id="modal-confirmacao">
+					<ui:insert name="modal-confirmacao">
+					</ui:insert>
+				</div>
+
+
+			</section>
+		</div>
+		<div class="control-sidebar-bg"></div>
+	</div>
+
+
+	<p:dialog header="Cancela Venda" widgetVar="dlgProduto" modal="true"
+		responsive="true" width="20%" id="dlgProduto" closable="true"
+		closeOnEscape="true" resizable="false" draggable="false">
+
+		<div id="cancelaProduto">
+			<ui:insert name="cancelaProduto">
+			</ui:insert>
+		</div>
+
+	</p:dialog>
+
+	<p:dialog header="Fechamento Caixa" widgetVar="dlgFechamentoCaixa"
+		modal="true" responsive="true" width="20%" id="dlgFechamentoCaixa"
+		closable="true" closeOnEscape="true" resizable="false"
+		draggable="false">
+
+		<div id="fechamentoCaixa">
+			<ui:insert name="fechamentoCaixa">
+			</ui:insert>
+		</div>
+
+	</p:dialog>
+
+	<p:dialog header="Consulta Produto" widgetVar="dlgConsultaProduto"
+		modal="true" responsive="true" width="60%" id="dlgConsultaProduto"
+		closable="true" closeOnEscape="true" resizable="false"
+		draggable="false">
+
+		<div id="consultaProduto">
+			<ui:insert name="consultaProduto">
+			</ui:insert>
+		</div>
+	</p:dialog>
+
+	<p:dialog header="Preço 2" widgetVar="dlgPreco2" modal="true"
+		responsive="true" width="60%" id="dlgPreco2" closable="true"
+		closeOnEscape="true" resizable="false" draggable="false">
+
+		<div id="preco2">
+			<ui:insert name="preco2">
+			</ui:insert>
+		</div>
+	</p:dialog>
+
+	<script type="text/javascript"
+		src="#{request.contextPath}/resources/bootstrap/js/bootstrap.min.js"></script>
+
+	<script type="text/javascript"
+		src="#{request.contextPath}/resources/plugins/slimScroll/jquery.slimscroll.min.js"></script>
+
+	<script type="text/javascript"
+		src="#{request.contextPath}/resources/plugins/fastclick/fastclick.js"></script>
+
+	<script type="text/javascript"
+		src="#{request.contextPath}/resources/dist/js/app.min.js"></script>
+
+	<script type="text/javascript"
+		src="#{request.contextPath}/resources/dist/js/demo.js"></script>
+</h:body>
+</html>

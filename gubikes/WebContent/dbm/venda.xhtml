@@ -1,0 +1,419 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core">
+<h:body>
+	<ui:composition template="../resources/template/dbm/template-venda-dbm.xhtml">
+		<ui:define name="mensagem">
+			<ui:include src="../componentes/mensagem.xhtml" />
+		</ui:define>
+
+		<ui:define name="barraStatus">
+			<ui:include src="../componentes/barraStatus.xhtml" />
+		</ui:define>
+
+		<ui:define name="conteudo">
+
+			<!-- 			<f:metadata> -->
+			<!-- 				<f:event type="preRenderView" -->
+			<!-- 					listener=" vendaConvenienciaDbmMB.verificaAbertura()}" /> -->
+			<!-- 			</f:metadata> -->
+
+
+
+			<div style="max-width: 1300px; height: 650px;">
+				<div style="width: 50%; height: 500px; float: left;">
+
+					<h:form id="dadosProduto">
+
+
+
+						<div class="ui-fluid">
+							<div class="col-md-12">
+							 
+								<label>Código Produto: </label>
+
+								<p:remoteCommand name="addProdutosItens"
+									actionListener="#{vendaConvenienciaDbmMB.addProdutosItens}"
+									update=":frmRemoveItem:inputCodigo :frmDiversos :dadosProduto:quantidade :dadosProduto:porct  :dlgInformacao :tabelaProdutos :tabelaProdutos:tfValorTotal :frmFechaVenda" />
+								<p:inputText title="Codigo de Barras" required="true" id="porct"
+									onkeypress="if (event.keyCode == 13) { addProdutosItens(); return false; }"
+									requiredMessage="Informe o código"
+									value="#{vendaConvenienciaDbmMB.codigoProduto}">
+
+								</p:inputText>
+
+								<label>Quantidade: </label>
+								<p:inputText id="quantidade" title="Nome"
+									onkeypress="if(event.keyCode===13){document.getElementById('dadosProduto:porct').focus();return false;}"
+									value="#{vendaConvenienciaDbmMB.quantidadeProduto}" />
+
+							</div>
+						</div>
+					</h:form>
+				</div>
+
+				<div
+					style="background-color: green; width: 50%; height: 500px; float: right;">
+					<h:form id="tabelaProdutos">
+						<p:dataTable id="tabela" resizableColumns="true" reflow="true"
+							rows="10" paginator="true" paginatorPosition="bottom" var="list"
+							tableStyle="height: 500px;"
+							value="#{vendaConvenienciaDbmMB.listItensVendaProduto}"
+							emptyMessage="Nenhum Produto Adicionado"
+							rowsPerPageTemplate="5,10,15,30,50,100">
+							<!-- 450px -->
+							<p:column headerText="Código">
+								<h:outputText value="#{list.codigoItem}" />
+							</p:column>
+							<p:column headerText="Produto">
+								<h:outputText value="#{list.produto.nome}" />
+							</p:column>
+							<p:column headerText="Valor Unitário">
+								<h:outputText value="#{list.valorUnitario}">
+									<f:convertNumber pattern="0.00" />
+								</h:outputText>
+							</p:column>
+							<p:column headerText="Quantidade">
+								<h:outputText value="#{list.quantidade}" />
+							</p:column>
+							<p:column headerText="Sub-Total">
+								<h:outputText value="#{list.subTotalItem}">
+									<f:convertNumber pattern="0.00" />
+								</h:outputText>
+							</p:column>
+						</p:dataTable>
+
+
+
+						<div class="ui-fluid">
+							<div class="col-md-4">
+								<label style="font-size: 200%">Valor Total: </label>
+
+							</div>
+
+							<div class="col-md-8">
+
+								<h:inputText id="tfValorTotal" style="font-size: 200%"
+									title="Nome" readonly="true"
+									value="#{vendaConvenienciaDbmMB.valorTotalItens}">
+									<f:convertNumber pattern="0.00" />
+								</h:inputText>
+
+
+							</div>
+						</div>
+					</h:form>
+				</div>
+			</div>
+
+
+
+
+			<!-- dlg abrir caixa -->
+			<p:dialog header="Abertura de Caixa" widgetVar="dlgAbrirCaixa"
+				modal="true" responsive="true" width="40%" id="dlgAbrirCaixa"
+				closable="false" closeOnEscape="true" resizable="false"
+				draggable="false">
+
+				<h:form id="frmAbrir">
+					<div class="ui-fluid">
+
+						<div class="col-md-2">
+							<h:outputText value="Funcionário" />
+						</div>
+						<div class="col-md-10">
+							<h:outputText value="#{vendaConvenienciaDbmMB.usuario.nomeUsuario}" />
+						</div>
+
+						<div class="col-md-12">
+							<label>Valor Caixa *</label>
+							<p:inputText title="Valor Entrada Caixa" required="true"
+								requiredMessage="Informe o valor de entrada de caixa"
+								value="#{vendaConvenienciaDbmMB.abertura.valorEntrada}">
+								<f:convertNumber pattern="0.00" />
+							</p:inputText>
+						</div>
+					</div>
+
+					<div class="ui-fluid">
+						<div class="col-md-12">
+							<label></label>
+							<p:commandButton value="Abrir Caixa"
+								actionListener="#{vendaConvenienciaDbmMB.abrirCaixa()}"
+								styleClass="ui-priority-primary" update=":dlgInformacao" />
+						</div>
+					</div>
+
+
+				</h:form>
+
+				<div class="ui-fluid">
+					<div class="col-md-12">
+						<label></label>
+						<p:commandButton value="Voltar"
+							actionListener="#{vendaConvenienciaDbmMB.voltar2()}" />
+					</div>
+				</div>
+
+			</p:dialog>
+
+			<!-- fim dlg abrir caixa -->
+
+
+			<!-- dlg fechar venda -->
+			<p:dialog header="Fechar Venda" widgetVar="dlgFecharVenda"
+				modal="true" responsive="true" width="60%" id="dlgFecharVenda"
+				closable="false" closeOnEscape="true" resizable="false"
+				draggable="false"  >
+
+				<h:form id="frmFechaVenda">
+					<div class="ui-fluid">
+
+						<div class="col-md-2">
+							<h:outputText value="Valor Total:" style="font-size: 20px; "/>
+						</div>
+						<div class="col-md-10">
+							<h:outputText value="#{vendaConvenienciaDbmMB.valorTotalItens}" style="font-size: 20px; ">
+								<f:convertNumber pattern="0.00" />
+							</h:outputText>
+						</div>
+
+						<div class="col-md-2">
+							<h:outputText value="Faltal:" style="color:red;  font-size: 20px;  "  />
+						</div>
+						<div class="col-md-10">
+							<h:outputText id="subTotal"
+								value="#{vendaConvenienciaDbmMB.subTotal}" style="font-size: 20px; ">
+								<f:convertNumber pattern="0.00" />
+							</h:outputText>
+						</div>
+
+						<div class="col-md-12">
+							<label>Dinheiro: *</label>
+							<p:inputText title="Valor Entrada Caixa" id="inputDinheiro"
+								required="true" requiredMessage="Informe o Valor"
+								value="#{vendaConvenienciaDbmMB.dinheiro}" style="font-size: 20px; ">
+
+								<f:convertNumber pattern="0.00" />
+							</p:inputText>
+						</div>
+
+					</div>
+					<div class="col-md-12"></div>
+					<div class="ui-fluid">
+						<div class="col-md-12">
+							<label> </label> <label style="font-size: 20px; ">Troco: </label>
+							<p:remoteCommand name="salvaItensEVenda"
+								actionListener="#{vendaConvenienciaDbmMB.salvaItensEVenda}"
+								update=":tabelaProdutos:tabela   :tabelaProdutos:tfValorTotal :dlgInformacao :frmFechaVenda:troco :frmFechaVenda:inputDinheiro :frmFechaVenda:subTotal" />
+							<p:inputText id="troco" title="Valor Entrada Caixa"
+								onkeypress="if (event.keyCode == 13) { salvaItensEVenda(); return false; }"
+								readonly="true" value="#{vendaConvenienciaDbmMB.troco}" style="font-size: 20px; " />
+
+							<label> </label>
+						</div>
+					</div>
+
+					<div class="modal-footer">
+						<label> </label>
+						<p:commandButton value="Finalizar Venda" style="font-size: 20px; "
+							actionListener="#{vendaConvenienciaDbmMB.verificaTroco()}"
+							styleClass="ui-priority-primary"
+							update=":tabelaProdutos:tabela   :tabelaProdutos:tfValorTotal :dlgInformacao :frmFechaVenda:troco :frmFechaVenda:subTotal" />
+
+
+					</div>
+
+				</h:form>
+
+
+			</p:dialog>
+
+			<!-- fim dlg fechar venda -->
+
+			<!-- DIALOG DETALHES -->
+			<p:dialog header="Diversos" widgetVar="dlgDiversos" responsive="true"
+				modal="true" closeOnEscape="true" resizable="false" closable="true"
+				draggable="false">
+				<p:outputPanel id="atividadeDetalheParcela">
+					<h:form id="frmDiversos">
+						<div class="ui-fluid">
+							<div class="col-md-12">
+								<label>Valor</label>
+								<p:inputText id="inputValorDiversos" required="true"
+									requiredMessage="informe o valor do porduto"
+									value="#{vendaConvenienciaDbmMB.valorDiversos}" />
+							</div>
+
+							<div class="col-md-12">
+								<label></label>
+
+							</div>
+
+							<small>Informe o valor do porduto sem a virgula*</small>
+						</div>
+
+						<div class="modal-footer">
+							<p:commandButton value="Adicionar"
+								styleClass="ui-priority-primary"
+								update=":dlgInformacao :tabelaProdutos :dadosProduto"
+								actionListener="#{vendaConvenienciaDbmMB.adicionaDiversos()}" />
+
+						</div>
+
+					</h:form>
+				</p:outputPanel>
+			</p:dialog>
+			<!-- FIM DO DIALOG DETALHES -->
+
+
+
+			<!-- dlg remove item -->
+			<p:dialog header="Remover Item" widgetVar="dlgRemoveItem"
+				modal="true" responsive="true" width="40%" id="dlgRemoveItem"
+				closable="false" closeOnEscape="true" resizable="false"
+				draggable="false">
+
+
+
+
+				<h:form id="frmRemoveItem">
+					<div class="ui-fluid">
+
+						<div class="col-md-12">
+							<label>Código Item*</label>
+							<p:inputText title="Valor Entrada Caixa" id="inputCodigo"
+								value="#{vendaConvenienciaDbmMB.codigoItemRemove}" />
+						</div>
+					</div>
+					<div class="modal-footer">
+						<div class="col-md-12">
+							<label></label>
+						</div>
+						<p:commandButton value="Remover"
+							actionListener="#{vendaConvenienciaDbmMB.removerItem()}"
+							styleClass="ui-priority-primary"
+							update=":dlgInformacao :tabelaProdutos" />
+
+					</div>
+
+				</h:form>
+
+
+			</p:dialog>
+
+			<!-- fim dlg remove item -->
+
+
+
+
+		</ui:define>
+
+		<ui:define name="cancelaProduto">
+			<div class="ui-fluid">
+				<h:form id="cancelaProd">
+					<p:commandButton icon="ui-icon-trash" title="Excluir"
+						actionListener="#{vendaConvenienciaDbmMB.cancelaVenda()}"
+						styleClass="btn btn-block"
+						update=":dlgInformacao :dadosProduto :tabelaProdutos :frmFechaVenda"
+						alt="Excluir">
+						<p:confirm header="Confirmação"
+							message="Deseja cancelar essa venda?" />
+					</p:commandButton>
+				</h:form>
+			</div>
+		</ui:define>
+
+		<ui:define name="fechamentoCaixa">
+			<div class="ui-fluid">
+				<h:form id="frmFechamentoCaixa">
+					<p:commandButton icon="ui-icon-circle-check" title="Excluir"
+						actionListener="#{vendaConvenienciaDbmMB.fecharCaixa()}"
+						styleClass="btn btn-block"
+						update=":dlgInformacao :dadosProduto :tabelaProdutos :frmFechaVenda"
+						alt="Excluir">
+						<p:confirm header="Confirmação"
+							message="Realmente Desejá Fechar o Caixa ? " />
+					</p:commandButton>
+				</h:form>
+			</div>
+		</ui:define>
+
+		<ui:define name="consultaProduto">
+			<div class="ui-fluid">
+				<h:form id="tabelaConsultaProdutos">
+					<p:remoteCommand name="consultaProdutos"
+						actionListener="#{vendaConvenienciaDbmMB.consultaProdutos}"
+						update=":tabelaConsultaProdutos :dlgInformacao" />
+					<p:inputText title="Codigo de Barras" required="true" id="codd"
+						onkeypress="if (event.keyCode == 13) { consultaProdutos(); return false; }"
+						requiredMessage="Informe o código"
+						value="#{vendaConvenienciaDbmMB.codigoProduto}">
+
+
+					</p:inputText>
+
+
+					<p:dataTable id="tabelaConsulta" resizableColumns="true"
+						reflow="true" rows="10" paginator="true"
+						paginatorPosition="bottom" var="list" style="font-size: 20px; "
+						value="#{vendaConvenienciaDbmMB.listProduto}"
+						emptyMessage="Nenhum Produto Encontrado"
+						rowsPerPageTemplate="5,10,15,30,50,100">
+
+
+						<p:column headerText="Produto">
+							<h:outputText value="#{list.nome}" />
+						</p:column>
+						<p:column headerText="Valor Unitário">
+							<h:outputText value="#{list.valorVenda}">
+								<f:convertNumber pattern="0.00" />
+							</h:outputText>
+						</p:column>
+						<p:column headerText="Preço 2">
+							<h:outputText value="#{list.preco2}">
+								<f:convertNumber pattern="0.00" />
+							</h:outputText>
+						</p:column>
+
+					</p:dataTable>
+
+
+				</h:form>
+
+			</div>
+		</ui:define>
+
+		<ui:define name="preco2">
+			<div class="ui-fluid">
+				<h:form id="formPreco">
+					<h3 style="margin-top: 0">Ativo</h3>
+					<h:panelGrid columns="2" style="margin-bottom:10px" cellpadding="5">
+						<p:selectOneRadio id="console"
+							value="#{vendaConvenienciaDbmMB.ativaValor2}">
+
+							<f:selectItem itemLabel="Sim" itemValue="true" />
+							<f:selectItem itemLabel="Não" itemValue="false" />
+
+							<p:ajax event="change"
+								listener="#{vendaConvenienciaDbmMB.ativaValor2()}"
+								update="formPreco" />
+						</p:selectOneRadio>
+					</h:panelGrid>
+				</h:form>
+			</div>
+		</ui:define>
+
+
+
+		<ui:define name="modal-confirmacao">
+			<ui:include src="../componentes/dialog-confirmacao.xhtml" />
+		</ui:define>
+	</ui:composition>
+</h:body>
+</html>
+

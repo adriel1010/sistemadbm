@@ -1,0 +1,106 @@
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:beans="http://www.springframework.org/schema/beans"
+
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans.xsd
+http://www.springframework.org/schema/security
+http://www.springframework.org/schema/security/spring-security-3.2.xsd">
+
+
+	<http auto-config="true" use-expressions="true">
+
+
+
+		<intercept-url pattern="/convenienciaguinnesbeer/venda.jsf/**"
+			access="hasRole('vendas')" />
+		<intercept-url pattern="/convenienciaguinnesbeer/usuario.jsf/**"
+			access="hasRole('cadastro_usuario')" />
+		<intercept-url pattern="/convenienciaguinnesbeer/tipo.jsf/**"
+			access="hasRole('cadastro_tipo')" />
+		<intercept-url pattern="/convenienciaguinnesbeer/produto.jsf/**"
+			access="hasRole('cadastro_produto')" />
+		<intercept-url pattern="/convenienciaguinnesbeer/relatorio.jsf/**"
+			access="hasRole('relatorios')" />
+
+		<intercept-url pattern="/convenienciaguinnesbeer/inicio.jsf/**"
+			access="hasRole('vendas') or hasRole('cadastro_produto') or hasRole('cadastro_usuario') or hasRole('cadastro_tipo')" />
+		<intercept-url pattern="/convenienciaguinnesbeer/inicio2.jsf/**"
+			access="hasRole('vendas') or hasRole('cadastro_produto') or hasRole('cadastro_usuario') or hasRole('cadastro_tipo')" />
+
+
+		<!-- <access-denied-handler error-page="/negado.jsf" /> -->
+		<!-- <form-login login-page="/loginguinnesbeer.jsf" -->
+		<!-- authentication-failure-url="/loginguinnesbeer.jsf?error=true" -->
+		<!-- default-target-url="/convenienciaguinnesbeer/inicio.jsf" /> -->
+
+
+		<intercept-url pattern="/dbm/venda.jsf/**" access="hasRole('vendas')" />
+		<intercept-url pattern="/dbm/usuario.jsf/**" access="hasRole('cadastro_usuario')" />
+		<intercept-url pattern="/dbm/tipo.jsf/**" access="hasRole('cadastro_tipo')" />
+		<intercept-url pattern="/dbm/produto.jsf/**" access="hasRole('cadastro_produto')" />
+		<intercept-url pattern="/dbm/relatorio.jsf/**" access="hasRole('relatorios')" />
+
+		<intercept-url pattern="/dbm/inicio.jsf/**"
+			access="hasRole('vendas') or hasRole('cadastro_produto') or hasRole('cadastro_usuario') or hasRole('cadastro_tipo')" />
+		<intercept-url pattern="/dbm/inicio2.jsf/**"
+			access="hasRole('vendas') or hasRole('cadastro_produto') or hasRole('cadastro_usuario') or hasRole('cadastro_tipo')" />
+
+
+		<access-denied-handler error-page="/negado.jsf" />
+		<form-login login-page="/logindbm.jsf"
+			authentication-failure-url="/logindbm.jsf?error=true"
+			default-target-url="/dbm/inicio.jsf" />
+			
+			
+			
+		 <intercept-url pattern="/conveniencia24horas/venda.jsf/**" access="hasRole('vendas')" /> 
+		 <intercept-url pattern="/conveniencia24horas/usuario.jsf/**" access="hasRole('cadastro_usuario')" />
+		 <intercept-url pattern="/conveniencia24horas/tipo.jsf/**" access="hasRole('cadastro_tipo')" />
+		 <intercept-url pattern="/conveniencia24horas/produto.jsf/**" access="hasRole('cadastro_produto')" />
+		 <intercept-url pattern="/conveniencia24horas/relatorio.jsf/**" access="hasRole('relatorios')" />
+		  
+		  <intercept-url pattern="/conveniencia24horas/inicio.jsf/**" access="hasRole('vendas') or hasRole('cadastro_produto') or hasRole('cadastro_usuario') or hasRole('cadastro_tipo')" />
+		  <intercept-url pattern="/conveniencia24horas/inicio2.jsf/**" access="hasRole('vendas') or hasRole('cadastro_produto') or hasRole('cadastro_usuario') or hasRole('cadastro_tipo')" />
+		  	
+<!-- 					<access-denied-handler error-page="/negado.jsf" /> -->
+<!-- 		<form-login login-page="/loginconveniencia24h.jsf" -->
+<!-- 			authentication-failure-url="/loginconveniencia24h.jsf?error=true" -->
+<!-- 			default-target-url="/conveniencia24horas/inicio.jsf" /> -->
+			
+	</http>
+
+	<authentication-manager>
+
+
+		<authentication-provider>
+
+			<password-encoder hash="bcrypt" />
+			<jdbc-user-service data-source-ref="dataSource"
+				users-by-username-query="SELECT  nomeUsuario as username, 
+                                 senha as password,  status as enable FROM tab_usuario WHERE nomeUsuario=?"
+
+				authorities-by-username-query="SELECT  d.nomeUsuario as username, b.descricao as authority FROM tab_permissao a , tab_tipo b, tab_usuario d where a.id_usuario = d.id_tipo and a.id_tipo = b.id_tipo and a.status = true and d.status = true and d.nomeUsuario =?" />
+
+		</authentication-provider>
+
+
+
+	</authentication-manager>
+	<beans:bean id="dataSource"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<!-- <beans:property name="url" -->
+		<!-- value="jdbc:mysql://localhost:3306/guinnesbeer" /> -->
+		<beans:property name="url"
+		value="jdbc:mysql://localhost:3306/sistemadbm" />
+<!-- 		<beans:property name="url" -->
+<!-- 			value="jdbc:mysql://localhost:3306/conveniencia24h" /> -->
+		<beans:property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<beans:property name="username" value="root" />
+		<beans:property name="password" value="" />
+	</beans:bean>
+
+
+
+
+</beans:beans>

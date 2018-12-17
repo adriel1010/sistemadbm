@@ -1,0 +1,883 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core">
+<h:body>
+	<ui:composition
+		template="../resources/template/dbm/template-cartao-dbm.xhtml">
+		<ui:define name="mensagem">
+			<ui:include src="../componentes/mensagem.xhtml" />
+		</ui:define>
+
+		<ui:define name="barraStatus">
+			<ui:include src="../componentes/barraStatus.xhtml" />
+		</ui:define>
+
+		<ui:define name="conteudo">
+
+			<!-- 			<f:metadata> -->
+			<!-- 				<f:event type="preRenderView" -->
+			<!-- 					listener=" vendaConvenienciaMB.verificaAbertura()}" /> -->
+			<!-- 			</f:metadata> -->
+
+
+
+			<div style="max-width: 1300px; height: 650px;">
+				<div style="width: 60%; height: 532px; float: left;">
+
+
+
+					<h:form id="frmCodigoCartao">
+
+						<div class="ui-fluid">
+							<div class="col-md-12">
+
+								<label>Código Cartão: </label>
+
+								<p:remoteCommand name="buscaCartaoVinculado"
+									actionListener="#{vendaCartaoDbmMB.buscaCartaoVinculado}"
+									update=":dadosProduto:tfValorTotal :dadosProduto:tfCliente :dadosProduto:tfSaldoDisponivel :dlgInformacao :frmCodigoCartao :dadosProduto:tabelaCliente" />
+								<p:inputText title="Codigo de Barras" required="true"
+									id="codBrr"
+									onkeypress="if (event.keyCode == 13) { buscaCartaoVinculado(); return false; }"
+									requiredMessage="Informe o código do cartão"
+									value="#{vendaCartaoDbmMB.codigoCartao}">
+
+								</p:inputText>
+							</div>
+						</div>
+					</h:form>
+
+
+
+					<h:form id="dadosProduto">
+
+						<div class="ui-fluid">
+							<div class="col-md-12">
+
+								<label>Código Produto: </label>
+
+								<p:remoteCommand name="addProdutosItensCartao"
+									actionListener="#{vendaCartaoDbmMB.addProdutosItensCartao}"
+									update=":dadosProduto:obsercavao :dadosProduto:tfValorTotal :frmLimite :frmLimiteValor :dadosProduto:tfSaldoDisponivel :frmCataoAlterar :dadosProduto:tabelaCliente :frmDiversos :dadosProduto:quantidade :dadosProduto:porct  :dlgInformacao :tabelaProdutos :frmFechaVenda :frmFechaVendaParcial" />
+								<p:inputText title="Codigo de Barras" required="true" id="porct"
+									onkeypress="if (event.keyCode == 13) { addProdutosItensCartao(); return false; }"
+									requiredMessage="Informe o código"
+									value="#{vendaCartaoDbmMB.codigoProduto}">
+
+								</p:inputText>
+
+								<label>Observação: </label>
+								<p:inputText id="obsercavao" title="Nome"
+									value="#{vendaCartaoDbmMB.obsercacao}" />
+
+								<label>Quantidade: </label>
+								<p:inputText id="quantidade" title="Nome"
+									onkeypress="if(event.keyCode===13){document.getElementById('dadosProduto:porct').focus();return false;}"
+									value="#{vendaCartaoDbmMB.quantidadeProduto}" />
+
+								<label> </label>
+
+
+								<p:dataTable id="tabelaCliente" resizableColumns="true"
+									reflow="true" rows="5" paginator="true"
+									paginatorPosition="bottom" var="list"
+									value="#{vendaCartaoDbmMB.listItensVendaProdutoCartao}"
+									tableStyle="height: 310px;"
+									emptyMessage="Nenhum Produto Adicionado"
+									rowsPerPageTemplate="5,10,15,30,50,100">
+									<!-- 450px -->
+									<p:column headerText="Código">
+										<h:outputText value="#{list.codigoItem}" />
+									</p:column>
+									<p:column headerText="Produto">
+										<h:outputText value="#{list.produto.nome}" />
+									</p:column>
+									<p:column headerText="Valor Unitário">
+										<h:outputText value="#{list.valorUnitario}">
+											<f:convertNumber pattern="0.00" />
+										</h:outputText>
+									</p:column>
+									<p:column headerText="Data Venda" style="width:150px;">
+										<h:outputText value="#{list.dataVenda}">
+											<f:convertDateTime pattern="dd/MM/yyyy - HH:mm"
+												timeZone="GMT-03:00" />
+										</h:outputText>
+									</p:column>
+									<p:column headerText="Quantidade">
+										<h:outputText value="#{list.quantidade}" />
+									</p:column>
+									<p:column headerText="Sub-Total">
+										<h:outputText value="#{list.subTotalItem}">
+											<f:convertNumber pattern="0.00" />
+										</h:outputText>
+									</p:column>
+									<p:column headerText="OBS">
+
+										<p:remoteCommand name="buscarObservacao"
+											actionListener="#{vendaCartaoDbmMB.buscarObservacao}"
+											update=":frmObservacao" />
+										<p:commandButton alt="Observação" icon="ui-icon-pencil"
+											update=":frmObservacao" title="Alterar" immediate="true"
+											styleClass="btn btn-block"
+											oncomplete="PF('dlgObservacao').show();"
+											actionListener="#{vendaCartaoDbmMB.buscarObservacao(list)}">
+										</p:commandButton>
+
+
+
+
+
+									</p:column>
+
+
+								</p:dataTable>
+
+
+
+
+
+							</div>
+						</div>
+
+						<div class="ui-fluid">
+							<div class="col-md-4">
+								<label style="font-size: 200%">Saldo Devedor: </label>
+
+							</div>
+
+							<div class="col-md-8">
+
+								<h:inputText id="tfValorTotal" style="font-size: 200%"
+									title="Nome" readonly="true"
+									value="#{vendaCartaoDbmMB.valorTotalItens}">
+									<f:convertNumber pattern="0.00" />
+								</h:inputText>
+
+
+							</div>
+
+							<div class="col-md-4">
+								<label style="font-size: 200%">Cliente: </label>
+
+							</div>
+
+							<div class="col-md-8">
+
+								<h:inputText id="tfCliente" style="font-size: 200%" title="Nome"
+									readonly="true" value="#{vendaCartaoDbmMB.cartao.nomeCliente}">
+								</h:inputText>
+
+
+							</div>
+
+							<div class="col-md-4">
+								<label style="font-size: 150%">Saldo Disponível: </label>
+
+							</div>
+
+							<div class="col-md-8">
+
+								<h:inputText id="tfSaldoDisponivel" style="font-size: 200%"
+									title="Nome" readonly="true"
+									value="#{vendaCartaoDbmMB.cartao.saldo} / #{vendaCartaoDbmMB.cartao.saldoDisponibilizado}">
+									<f:convertNumber pattern="0.00" />
+								</h:inputText>
+								
+								 
+
+
+							</div>
+						</div>
+					</h:form>
+
+
+
+
+
+				</div>
+
+
+				<div
+					style="background-color: green; width: 40%; height: 500px; float: right;">
+					<h:form id="tabelaProdutos">
+						<p:dataTable id="tabela" resizableColumns="true" reflow="true"
+							rows="10" paginator="true" paginatorPosition="bottom" var="list"
+							tableStyle="height: 500px;"
+							value="#{vendaCartaoDbmMB.listCartao}"
+							emptyMessage="Nenhum Produto Adicionado"
+							rowsPerPageTemplate="5,10,15,30,50,100">
+							<!-- 450px -->
+							<p:column headerText="Código">
+								<h:outputText value="#{list.codigoBarra}" />
+							</p:column>
+							<p:column headerText="Nome" filterBy="#{list.nomeCliente}">
+								<h:outputText value="#{list.nomeCliente}" />
+							</p:column>
+
+						</p:dataTable>
+
+
+
+
+					</h:form>
+				</div>
+			</div>
+
+
+
+
+			<!-- dlg abrir caixa -->
+			<p:dialog header="Abertura de Caixa" widgetVar="dlgAbrirCaixa"
+				modal="true" responsive="true" width="40%" id="dlgAbrirCaixa"
+				closable="false" closeOnEscape="true" resizable="false"
+				draggable="false">
+
+				<h:form id="frmAbrir">
+					<div class="ui-fluid">
+
+						<div class="col-md-2">
+							<h:outputText value="Funcionário" />
+						</div>
+						<div class="col-md-10">
+							<h:outputText value="#{vendaCartaoDbmMB.usuario.nomeUsuario}" />
+						</div>
+
+						<div class="col-md-12">
+							<label>Valor Caixa *</label>
+							<p:inputText title="Valor Entrada Caixa" required="true"
+								requiredMessage="Informe o valor de entrada de caixa"
+								value="#{vendaCartaoDbmMB.abertura.valorEntrada}">
+								<f:convertNumber pattern="0.00" />
+							</p:inputText>
+						</div>
+					</div>
+
+					<div class="ui-fluid">
+						<div class="col-md-12">
+							<label></label>
+							<p:commandButton value="Abrir Caixa"
+								actionListener="#{vendaCartaoDbmMB.abrirCaixa()}"
+								styleClass="ui-priority-primary" update=":dlgInformacao" />
+						</div>
+					</div>
+
+
+				</h:form>
+
+				<div class="ui-fluid">
+					<div class="col-md-12">
+						<label></label>
+						<p:commandButton value="Voltar"
+							actionListener="#{vendaCartaoDbmMB.voltar2()}" />
+					</div>
+				</div>
+
+			</p:dialog>
+
+			<!-- fim dlg abrir caixa -->
+
+
+			<!-- dlg fechar venda -->
+			<p:dialog header="Fechar Venda" widgetVar="dlgFecharVenda"
+				modal="true" responsive="true" width="60%" id="dlgFecharVenda"
+				closable="false" closeOnEscape="true" resizable="false"
+				draggable="false">
+
+				<h:form id="frmFechaVenda">
+					<div class="ui-fluid">
+
+						<div class="col-md-2">
+							<h:outputText value="Valor Total:" style="font-size: 20px; " />
+						</div>
+						<div class="col-md-10">
+							<h:outputText value="#{vendaCartaoDbmMB.valorTotalItens}"
+								style="font-size: 20px; ">
+								<f:convertNumber pattern="0.00" />
+							</h:outputText>
+						</div>
+
+						<div class="col-md-2">
+							<h:outputText value="Faltal:"
+								style="color:red;  font-size: 20px;  " />
+						</div>
+						<div class="col-md-10">
+							<h:outputText id="subTotal" value="#{vendaCartaoDbmMB.subTotal}"
+								style="font-size: 20px; ">
+								<f:convertNumber pattern="0.00" />
+							</h:outputText>
+						</div>
+
+						<div class="col-md-12">
+							<label>Dinheiro: *</label>
+							<p:inputText title="Valor Entrada Caixa" id="inputDinheiro"
+								required="true" requiredMessage="Informe o Valor"
+								value="#{vendaCartaoDbmMB.dinheiro}" style="font-size: 20px; ">
+
+								<f:convertNumber pattern="0.00" />
+							</p:inputText>
+						</div>
+
+					</div>
+					<div class="col-md-12"></div>
+					<div class="ui-fluid">
+						<div class="col-md-12">
+							<label> </label> <label style="font-size: 20px;">Troco: </label>
+							<p:remoteCommand name="salvaItensEVenda"
+								actionListener="#{vendaCartaoDbmMB.salvaItensEVenda}"
+								update=":frmCodigoCartao:codBrr :tabelaProdutos:tabela :dadosProduto  :dlgInformacao :frmFechaVenda:troco :frmFechaVenda:inputDinheiro :frmFechaVenda:subTotal" />
+							<p:inputText id="troco" title="Valor Entrada Caixa"
+								onkeypress="if (event.keyCode == 13) { salvaItensEVenda(); return false; }"
+								readonly="true" value="#{vendaCartaoDbmMB.troco}"
+								style="font-size: 20px; " />
+
+							<label> </label>
+						</div>
+					</div>
+
+					<div class="modal-footer">
+						<label> </label>
+						<p:commandButton value="Finalizar Venda" style="font-size: 20px; "
+							actionListener="#{vendaCartaoDbmMB.verificaTroco()}"
+							styleClass="ui-priority-primary"
+							update=":tabelaProdutos:tabela :dlgInformacao :frmFechaVenda:troco :frmFechaVenda:subTotal" />
+
+
+					</div>
+
+				</h:form>
+
+
+			</p:dialog>
+
+			<!-- fim dlg fechar venda -->
+
+
+			<!-- dlg fechar venda -->
+			<p:dialog header="Fechar Venda Parcial"
+				widgetVar="dlgFecharVendaParcial" modal="true" responsive="true"
+				width="60%" id="dlgFecharVendaParcial" closable="false"
+				closeOnEscape="true" resizable="false" draggable="false">
+
+				<h:form id="frmFechaVendaParcial">
+					<div class="ui-fluid">
+
+						<div class="col-md-2">
+							<h:outputText value="Valor Total:" style="font-size: 20px; " />
+						</div>
+						<div class="col-md-10">
+							<h:outputText value="#{vendaCartaoDbmMB.valorTotalItens}"
+								style="font-size: 20px; ">
+								<f:convertNumber pattern="0.00" />
+							</h:outputText>
+						</div>
+
+						<div class="col-md-2">
+							<h:outputText value="Faltal:"
+								style="color:red;  font-size: 20px;  " />
+						</div>
+						<div class="col-md-10">
+							<h:outputText id="subTotalParcial"
+								value="#{vendaCartaoDbmMB.subTotal}" style="font-size: 20px; ">
+								<f:convertNumber pattern="0.00" />
+							</h:outputText>
+						</div>
+
+						<div class="col-md-12">
+							<label>Dinheiro: *</label>
+							<p:inputText title="Valor Entrada Caixa"
+								id="inputDinheiroParcial" required="true"
+								requiredMessage="Informe o Valor"
+								value="#{vendaCartaoDbmMB.dinheiro}" style="font-size: 20px; ">
+
+								<f:convertNumber pattern="0.00" />
+							</p:inputText>
+						</div>
+
+					</div>
+					<div class="col-md-12"></div>
+					<div class="ui-fluid">
+						<div class="col-md-12">
+							<label> </label> <label style="font-size: 20px;">Restante:
+							</label>
+							<p:remoteCommand name="salvaItensEVendaParcial"
+								actionListener="#{vendaCartaoDbmMB.salvaItensEVendaParcial}"
+								update=":frmCodigoCartao:codBrr :tabelaProdutos:tabela :dadosProduto  :dlgInformacao :frmFechaVendaParcial:trocoParcial :frmFechaVendaParcial:inputDinheiroParcial :frmFechaVendaParcial:subTotalParcial" />
+							<p:inputText id="trocoParcial" title="Valor Entrada Caixa"
+								onkeypress="if (event.keyCode == 13) { salvaItensEVendaParcial(); return false; }"
+								readonly="true" value="#{vendaCartaoDbmMB.troco}"
+								style="font-size: 20px; " />
+
+							<label> </label>
+						</div>
+					</div>
+
+					<div class="modal-footer">
+						<label> </label>
+						<p:commandButton value="Finalizar Venda" style="font-size: 20px; "
+							actionListener="#{vendaCartaoDbmMB.verificaTrocoParcial()}"
+							styleClass="ui-priority-primary"
+							update=":tabelaProdutos:tabela :dlgInformacao :frmFechaVendaParcial:trocoParcial :frmFechaVendaParcial:subTotalParcial" />
+
+
+					</div>
+
+				</h:form>
+
+
+			</p:dialog>
+
+			<!-- fim dlg fechar venda -->
+
+			<!-- DIALOG DETALHES -->
+			<p:dialog header="Diversos" widgetVar="dlgDiversos" responsive="true"
+				modal="true" closeOnEscape="true" resizable="false" closable="true"
+				draggable="false">
+				<p:outputPanel id="atividadeDetalheParcela">
+					<h:form id="frmDiversos">
+						<div class="ui-fluid">
+							<div class="col-md-12">
+								<label>Valor</label>
+								<p:inputText id="inputValorDiversos" required="true"
+									requiredMessage="informe o valor do porduto"
+									value="#{vendaCartaoDbmMB.valorDiversos}" />
+
+								<label>Observação: </label>
+								<p:inputText id="obsercavao" title="Nome"
+									value="#{vendaCartaoDbmMB.obsercacao}" />
+							</div>
+
+							<div class="col-md-12">
+								<label></label>
+
+							</div>
+
+							<small>Informe o valor do porduto sem a virgula*</small>
+						</div>
+
+						<div class="modal-footer">
+							<p:commandButton value="Adicionar"
+								styleClass="ui-priority-primary"
+								update=":dlgInformacao :tabelaProdutos :dadosProduto"
+								actionListener="#{vendaCartaoDbmMB.adicionaDiversos()}" />
+
+						</div>
+
+					</h:form>
+				</p:outputPanel>
+			</p:dialog>
+			<!-- FIM DO DIALOG DETALHES -->
+
+			<!-- DIALOG DETALHES -->
+			<p:dialog header="Observação" widgetVar="dlgObservacao"
+				responsive="true" modal="true" closeOnEscape="true" width="70%"
+				resizable="false" closable="true" draggable="false">
+				<p:outputPanel id="atividadeObservacao">
+					<h:form id="frmObservacao">
+						<div class="ui-fluid">
+							<div class="col-md-12">
+								<p:dataTable id="ta" resizableColumns="true" reflow="true"
+									rows="10" paginator="true" paginatorPosition="bottom"
+									var="list" style="font-size: 20px; "
+									value="#{vendaCartaoDbmMB.listaString}"
+									emptyMessage="Nenhum observação Encontrado"
+									rowsPerPageTemplate="5,10,15,30,50,100">
+
+
+									<p:column headerText="Observação">
+										<h:outputText value="#{list}" />
+									</p:column>
+
+
+								</p:dataTable>
+
+
+							</div>
+
+							<div class="col-md-12">
+								<label></label>
+
+							</div>
+
+						</div>
+
+
+					</h:form>
+				</p:outputPanel>
+			</p:dialog>
+			<!-- FIM DO DIALOG DETALHES -->
+
+
+
+			<!-- DIALOG DETALHES -->
+			<p:dialog header="Limites" widgetVar="dlgLimites" responsive="true"
+				modal="true" closeOnEscape="true" width="50%" resizable="false"
+				closable="true" draggable="false">
+				<p:outputPanel id="atividadeLimite">
+					<h:form id="frmLimite">
+						<div class="ui-fluid" style="font-size: 200%;">
+							<div class="col-md-12">
+
+								<label>Valor Total em Cartão:</label>
+								<h:outputText value="#{vendaCartaoDbmMB.valorTotalVendas}">
+									<f:convertNumber pattern="0.00" />
+								</h:outputText>
+							</div>
+							
+							<div class="col-md-12">
+
+								<label>Valor Total Disponível:</label> 
+								<h:outputText value="#{vendaCartaoDbmMB.valorTotalDisponivel}">
+									<f:convertNumber pattern="0.00" />
+								</h:outputText>
+							</div>
+							 
+							<div class="col-md-12">
+								<label>Valor Máximo de Cartão: </label>
+								<h:inputText value="#{vendaCartaoDbmMB.config.valorMaximo}">
+									<f:convertNumber pattern="0.00" />
+								</h:inputText>
+							</div>
+
+							<div class="modal-footer">
+								<div class="col-md-12">
+									<label></label>
+								</div>
+								<p:commandButton value="Salvar"
+									actionListener="#{vendaCartaoDbmMB.salvarConfiguracoes()}"
+									styleClass="ui-priority-primary"
+									update=":dlgInformacao :dadosProduto" />
+
+							</div>
+
+
+						</div>
+
+
+					</h:form>
+				</p:outputPanel>
+			</p:dialog>
+			<!-- FIM DO DIALOG DETALHES -->
+			
+			
+				<!-- DIALOG DETALHES -->
+			<p:dialog header="Valores" widgetVar="dlgValores" responsive="true"
+				modal="true" closeOnEscape="true" width="50%" resizable="false"
+				closable="true" draggable="false">
+				<p:outputPanel id="atividadeValoresValores">
+					<h:form id="frmLimiteValor">
+						<div class="ui-fluid" style="font-size: 200%;">
+						
+						
+							<div class="col-md-12">
+
+								<label>Valor Total em Aberto:</label> 
+								<h:outputText value="#{vendaCartaoDbmMB.valorVendidoTotal}">
+									<f:convertNumber pattern="0.00" />
+								</h:outputText>
+							</div>
+							  
+							
+							<div class="col-md-12">
+
+								<label>Valor Vendido no Mês:</label> 
+								<h:outputText value="#{vendaCartaoDbmMB.valorVendidoNoMes}">
+									<f:convertNumber pattern="0.00" />
+								</h:outputText>
+							</div>
+							 
+							<div class="col-md-12">
+								<label>Valor Vendido no Ano: </label>
+								<h:outputText value="#{vendaCartaoDbmMB.valorVendidoNoAno}">
+									<f:convertNumber pattern="0.00" />
+								</h:outputText>
+							</div>
+							
+							<div class="col-md-12">
+								<label>Total de Vendas em Aberto: </label>
+								<h:outputText value="#{vendaCartaoDbmMB.qtdeCartao}"> 
+								</h:outputText>
+							</div>
+							
+							<div class="col-md-12">
+
+								<label>Valor Recebido Mês:</label> 
+								<h:outputText value="#{vendaCartaoDbmMB.valorRecebidoNoMes}">
+									<f:convertNumber pattern="0.00" />
+								</h:outputText>
+							</div>
+							
+							<div class="col-md-12">
+
+								<label>Valor Recebido Ano:</label> 
+								<h:outputText value="#{vendaCartaoDbmMB.valorRecebidoNoAno}">
+									<f:convertNumber pattern="0.00" />
+								</h:outputText>
+							</div>
+							
+							
+ 
+						</div>
+
+
+					</h:form>
+				</p:outputPanel>
+			</p:dialog>
+			<!-- FIM DO DIALOG DETALHES -->
+
+
+
+			<!-- dlg remove item -->
+			<p:dialog header="Remover Item" widgetVar="dlgRemoveItem"
+				modal="true" responsive="true" width="40%" id="dlgRemoveItem"
+				closable="false" closeOnEscape="true" resizable="false"
+				draggable="false">
+
+
+
+
+				<h:form id="frmRemoveItem">
+					<div class="ui-fluid">
+
+						<div class="col-md-12">
+							<label>Código Item*</label>
+							<p:inputText title="Valor Entrada Caixa" id="inputCodigo"
+								value="#{vendaCartaoDbmMB.codigoItemRemove}" />
+						</div>
+					</div>
+					<div class="modal-footer">
+						<div class="col-md-12">
+							<label></label>
+						</div>
+						<p:commandButton value="Remover"
+							actionListener="#{vendaCartaoDbmMB.removerItem()}"
+							styleClass="ui-priority-primary"
+							update=":dlgInformacao :dadosProduto dadosProduto:tfSaldoDisponivel" />
+
+					</div>
+
+				</h:form>
+
+
+			</p:dialog>
+
+			<!-- fim dlg remove item -->
+
+
+
+			<!-- dlg remove item -->
+			<p:dialog header="Alterar Cartão" widgetVar="dlgAlteraCartao"
+				modal="true" responsive="true" width="40%" id="dlgAlteraCartao"
+				closable="false" closeOnEscape="true" resizable="false"
+				draggable="false">
+
+				<h:form id="frmCataoAlterar">
+					<div class="ui-fluid">
+
+						<div class="col-md-12">
+							<label>Código de Barra*</label>
+							<p:inputText title="Código de barra" required="true" id="codcod"
+								requiredMessage="Informe o código de barra" readonly="true"
+								value="#{vendaCartaoDbmMB.cartao.codigoBarra}"
+								onkeypress="if(event.keyCode===13){document.getElementById('frmCataoAlterar:nomeClientAltera').focus();return false;}" />
+						</div>
+
+						<div class="col-md-12">
+							<label>Nome*</label>
+							<p:inputText title="Nome" required="true" id="nomeClientAltera"
+								requiredMessage="Informe o código de Nome"
+								value="#{vendaCartaoDbmMB.cartao.nomeCliente}"
+								onkeypress="if(event.keyCode===13){document.getElementById('frmCataoAlterar:saldoCataoAltera').focus();return false;}" />
+
+						</div>
+
+						<div class="col-md-12">
+							<label>Saldo*</label>
+							<p:inputText title="Saldo"
+								value="#{vendaCartaoDbmMB.cartao.saldoDisponibilizado}" id="saldoCataoAltera"
+								required="true" requiredMessage="Informe o Saldo">
+								<f:convertNumber pattern="0.00" />
+							</p:inputText>
+						</div>
+
+					</div>
+					<div class="modal-footer">
+						<div class="col-md-12">
+							<label></label>
+						</div>
+						<p:commandButton value="Cadastrar"
+							actionListener="#{vendaCartaoDbmMB.alterarVendaCartao()}"
+							styleClass="ui-priority-primary"
+							update=":dlgInformacao :tabelaProdutos :frmCodigoCartao :dadosProduto :frmCataoAlterar" />
+
+					</div>
+
+				</h:form>
+
+
+			</p:dialog>
+
+
+
+
+		</ui:define>
+
+		<ui:define name="cancelaProduto">
+			<div class="ui-fluid">
+				<h:form id="cancelaProd">
+					<p:commandButton icon="ui-icon-trash" title="Excluir"
+						actionListener="#{vendaCartaoDbmMB.cancelaVenda()}"
+						styleClass="btn btn-block"
+						update=":dlgInformacao :dadosProduto :tabelaProdutos :frmFechaVenda :frmFechaVendaParcial"
+						alt="Excluir">
+						<p:confirm header="Confirmação"
+							message="Deseja cancelar essa venda?" />
+					</p:commandButton>
+				</h:form>
+			</div>
+		</ui:define>
+
+		<ui:define name="fechamentoCaixa">
+			<div class="ui-fluid">
+				<h:form id="frmFechamentoCaixa">
+					<p:commandButton icon="ui-icon-circle-check" title="Excluir"
+						actionListener="#{vendaCartaoDbmMB.fecharCaixa()}"
+						styleClass="btn btn-block"
+						update=":dlgInformacao :dadosProduto :tabelaProdutos :frmFechaVenda :frmFechaVendaParcial"
+						alt="Excluir">
+						<p:confirm header="Confirmação"
+							message="Realmente Desejá Fechar o Caixa ? " />
+					</p:commandButton>
+				</h:form>
+			</div>
+		</ui:define>
+
+		<ui:define name="consultaProduto">
+			<div class="ui-fluid">
+				<h:form id="tabelaConsultaProdutos">
+					<p:remoteCommand name="consultaProdutos"
+						actionListener="#{vendaCartaoDbmMB.consultaProdutos}"
+						update=":tabelaConsultaProdutos :dlgInformacao" />
+					<p:inputText title="Codigo de Barras" required="true" id="codd"
+						onkeypress="if (event.keyCode == 13) { consultaProdutos(); return false; }"
+						requiredMessage="Informe o código"
+						value="#{vendaCartaoDbmMB.codigoProduto}">
+
+
+					</p:inputText>
+
+
+					<p:dataTable id="tabelaConsulta" resizableColumns="true"
+						reflow="true" rows="10" paginator="true"
+						paginatorPosition="bottom" var="list" style="font-size: 20px; "
+						value="#{vendaCartaoDbmMB.listProduto}"
+						emptyMessage="Nenhum Produto Encontrado"
+						rowsPerPageTemplate="5,10,15,30,50,100">
+
+
+						<p:column headerText="Produto">
+							<h:outputText value="#{list.nome}" />
+						</p:column>
+						<p:column headerText="Valor Unitário">
+							<h:outputText value="#{list.valorVenda}">
+								<f:convertNumber pattern="0.00" />
+							</h:outputText>
+						</p:column>
+						<p:column headerText="Preço 2">
+							<h:outputText value="#{list.preco2}">
+								<f:convertNumber pattern="0.00" />
+							</h:outputText>
+						</p:column>
+
+					</p:dataTable>
+
+
+				</h:form>
+
+			</div>
+		</ui:define>
+
+		<ui:define name="preco2">
+			<div class="ui-fluid">
+				<h:form id="formPreco">
+					<h3 style="margin-top: 0">Ativo</h3>
+					<h:panelGrid columns="2" style="margin-bottom:10px" cellpadding="5">
+						<p:selectOneRadio id="console"
+							value="#{vendaCartaoDbmMB.ativaValor2}">
+
+							<f:selectItem itemLabel="Sim" itemValue="true" />
+							<f:selectItem itemLabel="Não" itemValue="false" />
+
+							<p:ajax event="change"
+								listener="#{vendaCartaoDbmMB.ativaValor2()}" update="formPreco" />
+						</p:selectOneRadio>
+					</h:panelGrid>
+				</h:form>
+			</div>
+		</ui:define>
+
+
+		<!-- inicio dlg novo cartão-->
+		<ui:define name="novoCartao">
+			<h:form id="frmCatao">
+				<div class="ui-fluid">
+
+					<div class="col-md-12">
+						<label>Código de Barra*</label>
+						<p:inputText title="Código de barra" required="true"
+							requiredMessage="Informe o código de barra" id="codBarraCartao"
+							value="#{vendaCartaoDbmMB.cartao.codigoBarra}"
+							onkeypress="if(event.keyCode===13){document.getElementById('frmCatao:nomeClient').focus();return false;}" />
+					</div>
+
+					<div class="col-md-12">
+						<label>Nome*</label>
+						<p:inputText title="Nome" required="true" id="nomeClient"
+							requiredMessage="Informe o código de Nome"
+							value="#{vendaCartaoDbmMB.cartao.nomeCliente}"
+							onkeypress="if(event.keyCode===13){document.getElementById('frmCatao:saldoCatao').focus();return false;}" />
+
+					</div>
+
+					<div class="col-md-12">
+						<label>Saldo*</label>
+						<p:inputText title="Saldo"
+							value="#{vendaCartaoDbmMB.cartao.saldoDisponibilizado}" id="saldoCatao"
+							required="true" requiredMessage="Informe o Saldo">
+							<f:convertNumber pattern="0.00" />
+						</p:inputText>
+					</div>
+
+				</div>
+				<div class="modal-footer">
+					<div class="col-md-12">
+						<label></label>
+					</div>
+					<p:commandButton value="Cadastrar"
+						actionListener="#{vendaCartaoDbmMB.inserirVendaCartao()}"
+						styleClass="ui-priority-primary"
+						update=":dlgInformacao :tabelaProdutos :frmCatao" />
+
+				</div>
+
+			</h:form>
+		</ui:define>
+
+		<!-- fim dlg novo cartão-->
+
+
+
+
+
+
+
+		<ui:define name="modal-confirmacao">
+			<ui:include src="../componentes/dialog-confirmacao.xhtml" />
+		</ui:define>
+	</ui:composition>
+</h:body>
+</html>
+
